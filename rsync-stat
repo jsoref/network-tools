@@ -1,0 +1,14 @@
+#!/usr/bin/perl
+# This script generates a script which could be used to record the
+# equivalent of `rsync ... --rsync-path='rsync --fake-super' ...` generated
+# user.rsync.%stat extended attributes (xattr)
+#
+# Warning: these attributes do not work on symbolic links per xattr(7)
+
+while (<>) {
+  chomp;
+  my $file=$_;
+  my @x = lstat($file);
+  ($mode,$uid,$gid) = ($x[2],$x[4],$x[5]);
+  printf "setfattr -h -n '%s' -v '%04o 0,0 %d:%d' '%s';\n", 'user.rsync.%stat', $mode, $uid, $gid, $file;
+}
