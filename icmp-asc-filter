@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+# script to ignore continuous runs of ascending icmp_seq lines
+# this will report cases where lines are missing (lost pings)
+
+my $seq = 0;
+my $last = '';
+while (<>) {
+  if (/icmp_seq=(\d+)/) {
+    my $val = $1;
+    if ($val == $seq + 1) {
+      $last = $_;
+    } else {
+      print "...\n";
+      print $last;
+      $last = '';
+      print;
+    }
+    $seq = $val;
+  }
+}
